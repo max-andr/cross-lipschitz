@@ -75,11 +75,15 @@ Any suggestions are always welcome.
 
 ## Citation
 ```
-@article{hein2017formal,
-  title={Formal Guarantees on the Robustness of a Classifier against Adversarial Manipulation},
-  author={Hein, Matthias and Andriushchenko, Maksym},
-  journal={arXiv preprint arXiv:1705.08475},
-  year={2017}
+@incollection{NIPS2017_6821,
+	title = {Formal Guarantees on the Robustness of a Classifier against Adversarial Manipulation},
+	author = {Hein, Matthias and Andriushchenko, Maksym},
+	booktitle = {Advances in Neural Information Processing Systems 30},
+	editor = {I. Guyon and U. V. Luxburg and S. Bengio and H. Wallach and R. Fergus and S. Vishwanathan and R. Garnett},
+	pages = {2263--2273},
+	year = {2017},
+	publisher = {Curran Associates, Inc.},
+	url = {http://papers.nips.cc/paper/6821-formal-guarantees-on-the-robustness-of-a-classifier-against-adversarial-manipulation.pdf}
 }
 ```
 
