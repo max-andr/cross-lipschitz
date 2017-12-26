@@ -71,6 +71,7 @@ class ResNet(BasicNN):
         Build the core model within the graph.
           x: Batches of images. [batch_size, image_size, image_size, 3]
         """
+        self.x = x
         filters = self.filters
         res_func = self.res_func
 
