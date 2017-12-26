@@ -1,11 +1,19 @@
 import numpy
 import numpy as np
-import pickle
 import csv
 import scipy.io
 from PIL import Image
 from tensorflow.examples.tutorials.mnist import input_data
 
+import os
+import sys
+import wget
+import tarfile
+import shutil
+if sys.version_info[0] == 3:
+    import pickle
+else:
+    import cPickle as pickle
 
 def get_next_batch(X, Y, batch_size, augm_flag=False):
     n_batches = len(X) // batch_size
@@ -71,10 +79,32 @@ def normalize(x_train, x_test):
 def get_cifar10(as_image=True, onehot=True, validation_size=5000):
     """load all CIFAR-10 data and merge training batches"""
 
+    def download_cifar10_dataset(folder):
+        archieveFileName = 'cifar-10-python.tar.gz'
+        if os.path.exists(archieveFileName):
+            os.remove(archieveFileName)
+        print ("Downloading CIFAR-10 dataset")
+        url = 'http://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz'
+        filename = wget.download(url)
+
+        # Extract the tar file
+        print ("Extracting archive")
+        tar = tarfile.open(filename)
+        tar.extractall()
+        tar.close()
+
+        # Remove the data to this location
+        shutil.move('cifar-10-batches-py', folder)
+        os.remove(filename)
+
     def load_cifar10_file(filename):
         """load data from single CIFAR-10 file"""
         with open(filename, 'rb') as f:
-            data_dict = pickle.load(f, encoding='latin1')
+            # data_dict = pickle.load(f, encoding='latin1')
+            if sys.version_info[0] == 3:
+                data_dict = pickle.load(f, encoding='latin1')
+            else:
+                data_dict = pickle.load(f)
             x = data_dict['data']
             y = data_dict['labels']
             x = x.astype(float)
@@ -87,6 +117,9 @@ def get_cifar10(as_image=True, onehot=True, validation_size=5000):
         return x
 
     folder = 'data/cifar10/'
+    if not os.path.exists(folder):
+        download_cifar10_dataset(folder)
+
     xs, ys = [], []
     for i in range(1, 6):
         filename = folder + 'data_batch_' + str(i)
