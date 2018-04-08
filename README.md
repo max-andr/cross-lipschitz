@@ -42,7 +42,7 @@ A better regularization would be (keeping the bounds closed):
 <!--<img src="http://latex.codecogs.com/gif.latex?\Omega(f)%20=%20\frac{1}{n}\sum_{i=1}^n%20\frac{||\nabla%20f_{y_{i}}(x_i)%20-%20\nabla%20\max_{m}f_m(x_i)||_2^2}{||f_{y_{i}}(x_i)-\max_{m}f_m(x_i)||_2^2}" />-->
 <img src="http://latex.codecogs.com/gif.latex?j%20=%20\underset{m}{\mathrm{argmax}} \nabla f_m(x_i)" />
 
-<img src="http://latex.codecogs.com/gif.latex?\Omega(f)%20=%20\frac{1}{n}\sum_{i=1}^n%20\frac{||\nabla%20f_{y_{i}}(x_i)%20-%20\nabla%20\max_{m}f_j(x_i)||_2^2}{||f_{y_{i}}(x_i)-f_j(x_i)||_2^2}" />
+<img src="http://latex.codecogs.com/gif.latex?\Omega(f)%20=%20\frac{1}{n}\sum_{i=1}^n%20\frac{||\nabla%20f_{y_{i}}(x_i)%20-%20\nabla%20f_j(x_i)||_2^2}{||f_{y_{i}}(x_i)-f_j(x_i)||_2^2}" />
 
 ## Running options
 Supported neural network types:
@@ -53,6 +53,7 @@ Supported neural network types:
 
 Regularization types:
 
+- **`cross_lipschitz_updated`: the updated varient of the proposed Cross-Lipschitz regularization (with closed bounds)**
 - **`cross_lipschitz`: the proposed Cross-Lipschitz regularization**
 - `weight_decay`: a standard L2 weight decay
 - `dropout`: in case of ResNets it is implemented as suggested in [Wide Residual Networks](https://arxiv.org/pdf/1605.07146v1.pdf).
