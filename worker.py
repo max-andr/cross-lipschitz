@@ -73,8 +73,10 @@ parser.add_argument('--nn_type', type=str, default='mlp1layer',
                          'the paper.')
 parser.add_argument('--dataset', type=str, default='cifar10',
                     help='mnist, cifar10, gtrsrb (German traffic roadsign dataset).')
-parser.add_argument('--reg_type', type=str, default='cross_lipschitz',
-                    help='cross_lipschitz, no, weight_decay, dropout')
+# parser.add_argument('--reg_type', type=str, default='cross_lipschitz',
+#                     help='cross_lipschitz, no, weight_decay, dropout')
+parser.add_argument('--reg_type', type=str, default='cross_lipschitz_updated',
+                    help='cross_lipschitz, cross_lipschitz_updated, no, weight_decay, dropout')
 parser.add_argument('--opt_method', type=str, default='sgd',
                     help='Optimization method: sgd or momentum (default momentum: 0.9)')
 parser.add_argument('--n_epochs', type=int, default=200, help='Number of epochs.')
@@ -196,6 +198,12 @@ with tf.device(device):
             reg = regularizers.cross_lipschitz_analytical_1hl(model, hps.n_ex, hps)
         else:
             reg = regularizers.cross_lipschitz(f, X_input, hps.n_ex, hps)
+    elif 'cross_lipschitz_updated' in hps.reg_type:
+        if hps.nn_type == 'mlp1layer':
+            raise NotImplementedError
+        else:
+            print ("Using updated cross-lipschitz regularizer")
+            reg = regularizers.cross_lipschitz_updated(f, X_input, Y, hps.n_ex, hps)
     else:
         reg = tf.constant(0.0)  # 'dropout' and 'no' cases go here
 
