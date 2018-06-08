@@ -27,6 +27,42 @@ def cross_lipschitz(f, x, n_ex, hps):
     return reg / n_summations
 
 
+def cross_lipschitz_updated(f, x, y, n_ex, hps):
+    """
+    Calculates Cross-Lipschitz regularization in a straightforward way using tf.gradients to calculate the required
+    derivatives. Suitable for all differentiable classifiers. It is calculated for the given batch (details:
+    "Formal Guarantees on the Robustness of a Classifier against Adversarial Manipulation",
+    http://www.ml.uni-saarland.de/Publications/HeiAnd-FormGuarAdvManipLongVersion.pdf).
+
+    f: tensor, (batch_size, n_classes) - values of the output layer before softmax for a batch
+    x: tensor, (batch_size, n_input) or (batch_size, height, width, color) - input images
+    y: tensor, (batch_size) - input image labels
+    n_classes: int - number of classes
+    n_ex: int - number of examples in a batch
+    """
+    # n_summations = tf.cast(hps.n_classes ** 2 * n_ex, tf.float32)  # normalizing factor to unify scale of lambda across datasets
+    n_summations = tf.cast(n_ex, tf.float32)  # normalizing factor to unify scale of lambda across datasets (based on only the number of examples)
+    reg = 0
+    grad_matrix_list = [tf.gradients(f[:, k], x)[0] for k in range(hps.n_classes)]  # take each gradient wrt input only once
+    if hps.as_image:  # if x has shape (batch_size, height, width, color), then we need to flatten it first
+        grad_matrix_list = [tf.reshape(grad, [-1, hps.real_height * hps.real_width * hps.n_colors]) for grad in grad_matrix_list]
+
+    for inputIter in range(n_ex):
+        maxClsGradIdx = 0
+        l = y[inputIter] # GT class for the current example
+        for m in range(1, hps.n_classes):
+            if tf.norm(grad_matrix_list[m], ord=2, axis=1) > tf.norm(grad_matrix_list[maxClsGradIdx], ord=2, axis=1):
+                maxClsGradIdx = m
+
+        grad_diff_matrix = grad_matrix_list[l] - grad_matrix_list[maxClsGradIdx]  # difference of gradients for a class pair (l, m)
+        numerator = tf.norm(grad_diff_matrix, ord=2, axis=1)
+        denominator = tf.norm(f[:, l] - f[:, maxClsGradIdx], ord=2, axis=1)
+        norm_for_batch = numerator / denominator
+
+        reg += tf.reduce_sum(tf.square(norm_for_batch))
+    return reg / n_summations
+
+
 def cross_lipschitz_analytical_1hl(model, n_ex, hps):
     """
     Calculates Cross-Lipschitz regularization in analytic form for 1 hidden layer Neural Network. (details:
